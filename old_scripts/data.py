@@ -13,11 +13,10 @@ import os
 import json
 import pickle
 import trimesh
-import cv2
 from matplotlib import pyplot as plt
 
 # Location of shapenet dataset - must be downloaded manually
-MANUAL_DIR = "D:\shapenet_base\shapenet_core"
+MANUAL_DIR = "D:/shapenet_base/shapenet_core"
 # Set of object categories to be gathered for training
 OBJ_LABELS = ["bag,traveling bag,travelling bag,grip,suitcase"]
 

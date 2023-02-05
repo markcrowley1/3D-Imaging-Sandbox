@@ -11,14 +11,26 @@ from scipy.spatial.transform import Rotation
 
 POINTS = 512
 
-def rotate(points: np.ndarray, elevation: float, azimuth: float) -> np.ndarray:
-    # Rotate to base position
-    r = Rotation.from_euler("xyz", [-90, 90, 0], degrees= True)
-    r = np.array(r.as_matrix())
-    points = np.matmul(points, r)
+def read_metadata(dir: str) -> list[tuple]:
+    """Return each img file with elevation and azimuth"""
+    metadata = []
+    data = open(f"{dir}/rendering_metadata.txt", "r")
+    filenames = open(f"{dir}/renderings.txt", "r")
+    data = data.readlines()
+    filenames = filenames.readlines()
+
+    for i in range(len(filenames)):
+        filename = filenames[i].strip()
+        line = data[i].strip()
+        azimuth = float(line.split()[0])
+        elevation = float(line.split()[1])
+        metadata.append((filename, elevation, azimuth))
+
+    return metadata
+
+def rotate(points: np.ndarray, rotation: list) -> np.ndarray:
     # Rotate to rendering position
-    r = Rotation.from_euler("xyz", [0, -elevation, -azimuth],
-                            degrees= True)
+    r = Rotation.from_euler("xyz", rotation, degrees= True)
     r = np.array(r.as_matrix())
     points = np.matmul(points, r)
     return points
@@ -49,16 +61,22 @@ def visualise_data(img_file: str, points: np.ndarray):
 
 def main():
     # Paths to data
-    rendering = "D:/ShapeNetRendering/ShapeNetRendering/02691156/1a888c2c86248bbcf2b0736dd4d8afe0/rendering/00.png"
+    rendering = "D:/ShapeNetRendering/ShapeNetRendering/02691156/1a888c2c86248bbcf2b0736dd4d8afe0/rendering"
     obj_file = "D:/shapenet_base/shapenet_core/02691156/1a888c2c86248bbcf2b0736dd4d8afe0/models/model_normalized.obj"
-    # Sample ground truth point cloud
+
+    # Sample ground truth point cloud and rotate to base position
     mesh = trimesh.load(obj_file, force="mesh")
     sample = trimesh.sample.sample_surface(mesh, POINTS)
     sampled_points = sample[0]
     points = np.array(sampled_points)
-    # Compare image and point cloud
-    points = rotate(points, 28.4219545298, 169.132810398)
-    visualise_data(rendering, points)
+    base_points = rotate(points, [-90, 90, 0])
+
+    # Rotate to align with rendered image and compare
+    meta_data = read_metadata(rendering)
+    for data in meta_data:
+        rotation = [0, -data[1], -data[2]]
+        points = rotate(base_points, rotation)
+        visualise_data(f"{rendering}/{data[0]}", points)
 
 if __name__ == "__main__":
     main()

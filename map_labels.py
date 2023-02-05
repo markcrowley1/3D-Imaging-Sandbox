@@ -3,6 +3,8 @@ Description:
     Mapping shapenetcore and shapenetrenderings with each other
 """
 
+import json
+
 SHAPENETCORE = "D:/ShapeNetRendering/ShapeNetRendering"
 RENDERINGS = "D:/shapenet_base/shapenet_core"
 
