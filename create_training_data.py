@@ -7,7 +7,7 @@ Description:
 RENDERINGS = "D:/ShapeNetRendering/ShapeNetRendering"
 SHAPENETCORE = "D:/shapenet_base/shapenet_core"
 
-POINTS = 256
+POINTS = 512
 
 def main():
     pass
