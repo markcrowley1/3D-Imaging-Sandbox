@@ -131,14 +131,14 @@ def main():
     imgs = np.array(imgs).reshape(-1, IMG_SIZE, IMG_SIZE, 1)
     
     # Split images and point sets into training and testing splits
-    split_index = math.floor(training_split * count)
+    split_index = math.floor(training_split * len(imgs))
     training_images, test_images = imgs[:split_index], imgs[split_index:]
     training_ps, test_ps = point_sets[:split_index], point_sets[split_index:]
 
     # Save data
     if not os.path.isdir("./data"):
         os.mkdir("data")
-        
+
     pickle_out = open("./data/training_images.pickle", "wb")
     pickle.dump(training_images, pickle_out)
     pickle_out.close()
